@@ -1,0 +1,20 @@
+{
+  "name": "WebMessanger",
+  "title": "Web Messanger",
+  "description": "Simple wrapper to send push notification in different browsers",
+  "version": "0.1-dev",
+  "author": {
+    "name": "Yuriy Chabaniuk",
+    "url": "https://github.com/yuriy-chabaniuk"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yuriy-chabaniuk/WebMessanger.git"
+  },
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+
+  },
+  "keywords": []
+}
