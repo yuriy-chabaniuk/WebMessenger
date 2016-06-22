@@ -1,11 +1,61 @@
-WebMessenger = function() {
+WebMessenger = function(configs) {
     var self = this;
-    self.options = {};
+    self.configs = {};
     self.events = [];
+    self.messages = [];
     self.permission = null;
 
-    self.init = function () {
+    self.init = function (configs) {
         self.requestPermissions();
+        self.setConfigs(configs);
+    }
+
+    /**
+     * Set configs from object.
+     *
+     * @param object options
+     */
+    self.setConfigs = function (options) {
+        if (self.isObject(options)) {
+            for (var prop in options) {
+                self.config(prop, options[prop])
+            }
+        }
+    }
+
+    /**
+     * get/set config.
+     *
+     * @param string key
+     * @param value
+     * @returns mixed|boolean
+     */
+    self.config = function (key, value) {
+        var result = true;
+
+        if (value) {
+            self.configs.key = value;
+        } else {
+            result = self.configs.key;
+        }
+
+        return result;
+    }
+
+    /**
+     *
+     * @param string key
+     * @param value
+     * @returns {WebMessenger}
+     */
+    self.addConfig = function (key, value) {
+        self.config(key, value);
+
+        return self;
+    }
+
+    self.getVersion = function () {
+        return '0.2';
     }
 
     /**
@@ -175,9 +225,59 @@ WebMessenger = function() {
         return self;
     }
 
-    self.queue = function (title, options) {
-        return new Error("Not implemented");
+    /**
+     * Add message to queue.
+     *
+     * @param string title
+     * @param object options
+     * @param callback|null trigger
+     * @returns {WebMessenger}
+     */
+    self.queue = function (title, options, trigger) {
+        var queueMessage = {
+            'title': title,
+            'options': options,
+            'trigger': trigger
+        };
+
+        self.messages.push(queueMessage);
+
+        return self;
     }
 
-    self.init();
+    /**
+     * Process queue. Apply trigger to send messages if need.
+     *
+     * @param callback trigger
+     */
+    self.processQueue = function (trigger) {
+        for (var message in self.messages) {
+            var queueMessage = self.messages[message];
+            var send = false;
+
+            if (self.isCallback(queueMessage.trigger)) {
+                send = queueMessage.trigger.call();
+            } else if (self.isCallback(trigger)) {
+                send = trigger.call();
+            } else {
+                /* Send message if there are no triggers applied */
+                send = true;
+            }
+
+            if (send === true) {
+                self.send(queueMessage.title, queueMessage.options);
+                /* We should remove message if it was already send. */
+                delete self.messages[message];
+            }
+        }
+
+        /* Filter out the queue until there are messages there */
+        if (self.messages.length > 0) {
+            setTimeout(function () {
+                self.processQueue(trigger);
+            }, self.config('queueTimeout'));
+        }
+    }
+
+    self.init(configs);
 }
