@@ -2,7 +2,7 @@
   "name": "WebMessanger",
   "title": "Web Messanger",
   "description": "Simple wrapper to send push notification in different browsers",
-  "version": "0.1-dev",
+  "version": "0.2-dev",
   "author": {
     "name": "Yuriy Chabaniuk",
     "url": "https://github.com/yuriy-chabaniuk"
